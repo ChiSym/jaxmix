@@ -5,6 +5,7 @@ from jaxtyping import Array, Float, Integer
 from plum import dispatch
 from safetensors import safe_open
 from safetensors.flax import save_file
+from natsort import natsorted
 
 
 def dataframe_to_arrays(df: pl.DataFrame):
@@ -171,7 +172,7 @@ def make_schema(df: pl.DataFrame):
         if df[c].dtype == pl.Utf8:
             schema["types"]["categorical"].append(c)
             schema["var_metadata"][c] = {
-                "levels": df[c].drop_nulls().unique().sort().to_list()
+                "levels": natsorted(df[c].drop_nulls().unique())
             }
         elif df[c].dtype == pl.Float64:
             schema["types"]["normal"].append(c)
