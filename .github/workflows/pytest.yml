@@ -12,6 +12,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.11.5", "3.12.5"]
 
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +23,19 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.11.5
+          python-version: ${{ matrix.python-version }}
           cache: 'pip'
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Sync the environment with what is in uv.lock
+        run: |
+          uv sync --frozen
 
       - name: Run Tests
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -e .
-          pytest test
+          uv run pytest
