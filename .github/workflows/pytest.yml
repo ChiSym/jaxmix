@@ -38,4 +38,5 @@ jobs:
 
       - name: Run Tests
         run: |
-          uv run pytest
+          uv run --frozen \
+            pytest
